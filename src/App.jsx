@@ -1,9 +1,15 @@
 import React from "react";
 import OverAllSummary from "./components/OverAllSummary";
-function App() {
+import OrderDetails from "./views/OrderDetails";
+import demo from "../demo.js";
+
+function App({ data }) {
+  const sales = demo(data);
+  console.log(sales, "demo");
   return (
     <>
-      <OverAllSummary />
+      <OverAllSummary sales={sales} />
+      <OrderDetails order={sales.filteredReceipts} />
     </>
   );
 }
