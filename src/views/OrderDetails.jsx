@@ -7,19 +7,26 @@ import {
   Divider,
   Button,
   Tooltip,
+  Popper,
+  Fade,
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import PrintIcon from "@mui/icons-material/Print";
 const style = {
-  stack: {},
   paper: {
     minWidth: 250,
-    height: 500,
-    padding: 2,
+    height: 450,
+    padding: 3,
     margin: "auto",
     background:
       "radial-gradient(200px 210px ellipse at 75% 50%, rgb(0 200 5 / 100%), rgb(0 200 5 / 50%), #ffffff)",
+    overflowY: "scroll",
+    "&::-webkit-scrollbar": {
+      display: "none",
+    },
+    "-ms-overflow-style": "none",
+    scrollbarWidth: "none",
   },
   moreOption: {
     borderRadius: "50%",
@@ -29,60 +36,186 @@ const style = {
   primFontSize: {
     fontSize: 14,
   },
+  totalColor: {
+    color: "#00c805",
+  },
 };
 
 const OrderDetails = ({ order }) => {
+  const [open, setOpen] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpen((previousOpen) => !previousOpen);
+  };
+
   return (
     <>
       <Stack direction="row" spacing={2} sx={style.stack}>
-        <Paper sx={{ ...style.paper }} elevation={4}>
-          <Box sx={{ textAlign: "right" }}>
-            <Button sx={style.moreOption}>
-              <MoreHorizIcon />
-            </Button>
-          </Box>
-          <Box>
-            <Typography sx={style.primFontSize}>Date</Typography>
-            <Typography sx={style.primFontSize}>Bill No:</Typography>
-            <Typography sx={style.primFontSize}>Table:</Typography>
-            <Typography sx={style.primFontSize}>People Count:</Typography>
-          </Box>
-          <Box sx={{ mt: 1, mb: 1 }}>
-            <Typography sx={style.primFontSize}>Item List</Typography>
-            <Typography title="cancel reason" sx={style.primFontSize}>
-              Item List
-              <ReportProblemIcon
-                sx={{
-                  padding: 0,
-                  marginLeft: 1,
-                  marginBottom: "-3px",
-                  fontSize: "1.2rem",
-                }}
-              />
+        {order.slice(0, 5).map((o) => (
+          <Paper
+            key={o._id}
+            sx={{
+              ...style.paper,
+            }}
+            elevation={4}
+          >
+            <Box sx={{ textAlign: "right" }}>
+              <Button sx={style.moreOption} onClick={(e) => handleClick(e)}>
+                <MoreHorizIcon />
+              </Button>
+              <Popper
+                open={open}
+                anchorEl={anchorEl}
+                placement={"bottom-start"}
+                transition
+              >
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
+                    <Paper
+                      sx={{
+                        border: 0,
+                        p: 1,
+                        fontSize: "1rem",
+                        bgcolor: "white",
+                      }}
+                    >
+                      Change Payement Method
+                    </Paper>
+                  </Fade>
+                )}
+              </Popper>
+            </Box>
+            <Box>
+              <Typography sx={style.primFontSize}>Date</Typography>
+              <Typography sx={style.primFontSize}>
+                Bill No: {o.billNumber} ({o.fiscalYear})
+              </Typography>
+              <Typography sx={{ ...style.primFontSize, fontWeight: "700" }}>
+                Table: {o.locationIdentifier}
+              </Typography>
+              <Typography sx={style.primFontSize}>
+                People Count: {o.peopleCount}
+              </Typography>
+            </Box>
+            <Box sx={{ mt: 1, mb: 1 }}>
+              {o.orderItems
+                .filter((item) => item.status === "canceled")
+                .reduce((accumulator, item) => {
+                  const existingItem = accumulator.find(
+                    (i) => i.productName === item.productName
+                  );
+                  if (existingItem) {
+                    existingItem.amount += item.amount;
+                    existingItem.count += 1;
+                  } else {
+                    accumulator.push({
+                      productName: item.productName,
+                      amount: item.amount,
+                      reason: item.reasonForCancelation,
+                      count: 1,
+                    });
+                  }
+                  return accumulator;
+                }, [])
+                .map((item) => (
+                  <Typography
+                    key={item.productName}
+                    title={item.reason}
+                    sx={style.primFontSize}
+                  >
+                    {item.productName} x {item.count} - {item.amount}
+                    <ReportProblemIcon
+                      color="warning"
+                      sx={{
+                        fontSize: 20,
+                        border: 0,
+                        padding: 0,
+                        marginBottom: "-4px",
+                      }}
+                    />
+                  </Typography>
+                ))}
+              {o.orderItems
+                .filter((item) => item.status !== "canceled")
+                .reduce((accumulator, item) => {
+                  const existingItem = accumulator.find(
+                    (i) => i.productName === item.productName
+                  );
+                  if (existingItem) {
+                    existingItem.amount += item.amount;
+                    existingItem.count += 1;
+                  } else {
+                    accumulator.push({
+                      productName: item.productName,
+                      amount: item.amount,
+                      count: 1,
+                    });
+                  }
+                  return accumulator;
+                }, [])
+                .map((item) => (
+                  <Typography key={item.productName} sx={style.primFontSize}>
+                    {item.productName} x {item.count} - {item.amount}
+                  </Typography>
+                ))}
+            </Box>
+
+            <Divider />
+            <Box sx={{ mt: 1 }}>
+              <Typography sx={style.primFontSize}>
+                Sub Total:
+                {o.orderItems
+                  .filter((item) => item.status !== "canceled")
+                  .reduce((subTotal, item) => subTotal + item.amount, 0)
+                  .toFixed(2)}
+              </Typography>
+
+              {o.discount ? (
+                <Typography sx={style.primFontSize}>
+                  Discount: {Math.round(o.discount)}
+                </Typography>
+              ) : null}
+              {o.productPricesIncludeVATFlag && (
+                <Typography sx={style.primFontSize}>
+                  VAT (
+                  {o.additionalCharges.find((charge) => charge.name === "VAT")
+                    ?.rate || 0}
+                  %):
+                  {o.additionalCharges.find((charge) => charge.name === "VAT")
+                    ?.amount || 0}
+                </Typography>
+              )}
+              {o.additionalCharges.find(
+                (charge) => charge.name === "Delivery Charges"
+              )?.amount ? (
+                <Typography sx={style.primFontSize}>
+                  Delivery Charge:{" "}
+                  {
+                    o.additionalCharges.find(
+                      (charge) => charge.name === "Delivery Charges"
+                    ).amount
+                  }
+                </Typography>
+              ) : null}
+            </Box>
+            <Typography variant="h5" sx={style.totalColor}>
+              {o.totalAmount}
             </Typography>
-            <Typography sx={style.primFontSize}>Item List</Typography>
-            <Typography sx={style.primFontSize}>Item List</Typography>
-          </Box>
-          <Divider />
-          <Box sx={{ mt: 1 }}>
-            <Typography sx={style.primFontSize}>Sub Total</Typography>
-            <Typography sx={style.primFontSize}>Discount</Typography>
-            <Typography sx={style.primFontSize}>VAT</Typography>
-            <Typography sx={style.primFontSize}>Delivery Charge</Typography>
-          </Box>
-          <Typography variant="h5">9,182</Typography>
-          <Box>
-            <Typography sx={style.primFontSize}>Added By:</Typography>
-            <Typography sx={style.primFontSize}>Payement Method:</Typography>
-            <Typography sx={style.primFontSize}>Cleared By:</Typography>
-            <Typography sx={style.primFontSize}>Cleared:</Typography>
-          </Box>
-          <Tooltip>
-            <Button>
-              <PrintIcon />
-            </Button>
-          </Tooltip>
-        </Paper>
+            <Box>
+              <Typography sx={style.primFontSize}>Added By:</Typography>
+              <Typography sx={style.primFontSize}>Payement Method:</Typography>
+              <Typography sx={style.primFontSize}>Cleared By:</Typography>
+              <Typography sx={style.primFontSize}>Cleared:</Typography>
+            </Box>
+            <Tooltip>
+              <Button>
+                <PrintIcon />
+              </Button>
+            </Tooltip>
+          </Paper>
+        ))}
       </Stack>
     </>
   );

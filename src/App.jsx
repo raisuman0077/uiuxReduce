@@ -5,7 +5,7 @@ import demo from "../demo.js";
 
 function App({ data }) {
   const sales = demo(data);
-  console.log(sales, "demo");
+
   return (
     <>
       <OverAllSummary sales={sales} />
