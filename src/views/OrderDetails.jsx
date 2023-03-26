@@ -13,19 +13,23 @@ import {
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import PrintIcon from "@mui/icons-material/Print";
+import NepaliDate from "nepali-date-converter";
 const style = {
+  stack: {
+    paddingLeft: 15,
+  },
   paper: {
-    minWidth: 250,
+    minWidth: 200,
     height: 450,
     padding: 3,
     margin: "auto",
     background:
-      "radial-gradient(200px 210px ellipse at 75% 50%, rgb(0 200 5 / 100%), rgb(0 200 5 / 50%), #ffffff)",
+      "radial-gradient(200px 210px ellipse at 75% 50%, rgb(65 221 69), rgb(50 223 54 / 50%), #ffffff)",
     overflowY: "scroll",
     "&::-webkit-scrollbar": {
       display: "none",
     },
-    "-ms-overflow-style": "none",
+    msOverflowStyle: "none",
     scrollbarWidth: "none",
   },
   moreOption: {
@@ -49,7 +53,10 @@ const OrderDetails = ({ order }) => {
     setAnchorEl(event.currentTarget);
     setOpen((previousOpen) => !previousOpen);
   };
-
+  const NepaliDateConverter = ({ englishDate }) => {
+    const nepaliDate = new NepaliDate(new Date(englishDate));
+    return <span>{nepaliDate.format("MMMM DD YYYY")}</span>;
+  };
   return (
     <>
       <Stack direction="row" spacing={2} sx={style.stack}>
@@ -88,7 +95,15 @@ const OrderDetails = ({ order }) => {
               </Popper>
             </Box>
             <Box>
-              <Typography sx={style.primFontSize}>Date</Typography>
+              <Typography sx={style.primFontSize}>
+                <NepaliDateConverter englishDate={o.createdAt} />{" "}
+                {new Date(o.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </Typography>
+
               <Typography sx={style.primFontSize}>
                 Bill No: {o.billNumber} ({o.fiscalYear})
               </Typography>
@@ -112,7 +127,6 @@ const OrderDetails = ({ order }) => {
                   } else {
                     accumulator.push({
                       productName: item.productName,
-                      amount: item.amount,
                       reason: item.reasonForCancelation,
                       count: 1,
                     });
@@ -125,7 +139,7 @@ const OrderDetails = ({ order }) => {
                     title={item.reason}
                     sx={style.primFontSize}
                   >
-                    {item.productName} x {item.count} - {item.amount}
+                    {item.productName} x {item.count}
                     <ReportProblemIcon
                       color="warning"
                       sx={{
