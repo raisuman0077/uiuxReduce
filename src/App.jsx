@@ -1,15 +1,15 @@
 import React from "react";
 import OverAllSummary from "./components/OverAllSummary";
 import OrderDetails from "./views/OrderDetails";
-import demo from "../demo.js";
+import demoData from "../getDemoData.js";
 
 function App({ data }) {
-  const sales = demo(data);
+  const salesData = demoData(data);
 
   return (
     <>
-      <OverAllSummary sales={sales} />
-      <OrderDetails order={sales.filteredReceipts} />
+      <OverAllSummary salesData={salesData} />
+      <OrderDetails orderData={salesData.filteredReceipts} />
     </>
   );
 }

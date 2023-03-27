@@ -45,7 +45,7 @@ const style = {
   },
 };
 
-const OrderDetails = ({ order }) => {
+const OrderDetails = ({ orderData }) => {
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -53,14 +53,62 @@ const OrderDetails = ({ order }) => {
     setAnchorEl(event.currentTarget);
     setOpen((previousOpen) => !previousOpen);
   };
+
   const NepaliDateConverter = ({ englishDate }) => {
     const nepaliDate = new NepaliDate(new Date(englishDate));
     return <span>{nepaliDate.format("MMMM DD YYYY")}</span>;
   };
+
+  const ItemList = ({ items }) => {
+    const canceledItems = {};
+    const nonCanceledItems = items.reduce((acc, curr) => {
+      const { productName, amount, reasonForCancelation } = curr;
+      if (curr.status === "canceled") {
+        canceledItems[productName] = canceledItems[productName] || {
+          count: 0,
+          reasonForCancelation,
+        };
+        canceledItems[productName].count++;
+      } else {
+        acc[productName] = acc[productName] || { count: 0, totalAmount: 0 };
+        acc[productName].count++;
+        acc[productName].totalAmount += amount;
+      }
+      return acc;
+    }, {});
+
+    return (
+      <Box>
+        {Object.entries(canceledItems).map(
+          ([productName, { count, reasonForCancelation }]) => (
+            <Typography
+              title={reasonForCancelation}
+              key={productName}
+              sx={style.primFontSize}
+            >
+              {productName} x {count}{" "}
+              <ReportProblemIcon
+                color="warning"
+                sx={{ fontSize: 20, mb: "-3px" }}
+              />
+            </Typography>
+          )
+        )}
+        {Object.entries(nonCanceledItems).map(
+          ([productName, { count, totalAmount }]) => (
+            <Typography key={productName} sx={style.primFontSize}>
+              {productName} x {count} - {totalAmount.toFixed(2)}
+            </Typography>
+          )
+        )}
+      </Box>
+    );
+  };
+
   return (
     <>
       <Stack direction="row" spacing={2} sx={style.stack}>
-        {order.slice(0, 5).map((o) => (
+        {orderData.slice(0, 5).map((o) => (
           <Paper
             key={o._id}
             sx={{
@@ -115,65 +163,7 @@ const OrderDetails = ({ order }) => {
               </Typography>
             </Box>
             <Box sx={{ mt: 1, mb: 1 }}>
-              {o.orderItems
-                .filter((item) => item.status === "canceled")
-                .reduce((accumulator, item) => {
-                  const existingItem = accumulator.find(
-                    (i) => i.productName === item.productName
-                  );
-                  if (existingItem) {
-                    existingItem.amount += item.amount;
-                    existingItem.count += 1;
-                  } else {
-                    accumulator.push({
-                      productName: item.productName,
-                      reason: item.reasonForCancelation,
-                      count: 1,
-                    });
-                  }
-                  return accumulator;
-                }, [])
-                .map((item) => (
-                  <Typography
-                    key={item.productName}
-                    title={item.reason}
-                    sx={style.primFontSize}
-                  >
-                    {item.productName} x {item.count}
-                    <ReportProblemIcon
-                      color="warning"
-                      sx={{
-                        fontSize: 20,
-                        border: 0,
-                        padding: 0,
-                        marginBottom: "-4px",
-                      }}
-                    />
-                  </Typography>
-                ))}
-              {o.orderItems
-                .filter((item) => item.status !== "canceled")
-                .reduce((accumulator, item) => {
-                  const existingItem = accumulator.find(
-                    (i) => i.productName === item.productName
-                  );
-                  if (existingItem) {
-                    existingItem.amount += item.amount;
-                    existingItem.count += 1;
-                  } else {
-                    accumulator.push({
-                      productName: item.productName,
-                      amount: item.amount,
-                      count: 1,
-                    });
-                  }
-                  return accumulator;
-                }, [])
-                .map((item) => (
-                  <Typography key={item.productName} sx={style.primFontSize}>
-                    {item.productName} x {item.count} - {item.amount}
-                  </Typography>
-                ))}
+              <ItemList items={o.orderItems} />
             </Box>
 
             <Divider />

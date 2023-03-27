@@ -10,28 +10,32 @@ const style = {
   },
 };
 
-const OverAllSummary = ({ sales }) => {
+const OverAllSummary = ({ salesData }) => {
   return (
     <>
       <Box sx={{ ...style.box, color: "#00c805" }}>
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-          Total Sales : Rs. {sales.totalSales.toFixed(2)}
+          Total Sales: Rs.{" "}
+          {salesData.totalSales.toLocaleString({
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </Typography>
         <Typography sx={{ fontWeight: "bold" }}>
-          Net Sales : Rs. {sales.total.toFixed(2)}
+          Net Sales : Rs. {salesData.total.toFixed(2)}
         </Typography>
         <Typography sx={{ fontWeight: "bold" }}>
-          Total Discount : Rs.{sales.discount.toFixed(2)}
+          Total Discount : Rs.{salesData.discount.toFixed(2)}
         </Typography>
         <Typography sx={{ fontWeight: "bold" }}>
-          Total Non-Chargable : Rs.{sales.totalNonChargeable.toFixed(2)}
+          Total Non-Chargable : Rs.{salesData.totalNonChargeable.toFixed(2)}
         </Typography>
         <Typography sx={{ fontWeight: "bold" }}>
           Total Taxable : Rs.
-          {(sales.total - sales.totalNonChargeable).toFixed(2)}
+          {(salesData.total - salesData.totalNonChargeable).toFixed(2)}
         </Typography>
         <Typography sx={{ fontWeight: "bold" }}>
-          Delivery Charges Rs.{sales.charges.deliveryCharges.toFixed(2)}
+          Delivery Charges Rs.{salesData.charges.deliveryCharges.toFixed(2)}
         </Typography>
       </Box>
     </>
