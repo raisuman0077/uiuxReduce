@@ -1,15 +1,35 @@
-import React from "react";
-import OverAllSummary from "./components/OverAllSummary";
-import OrderDetails from "./views/OrderDetails";
-import demoData from "../getDemoData.js";
+import React, { Suspense } from "react";
+import { Routes, Route } from "react-router-dom";
 
-function App({ data }) {
-  const salesData = demoData(data);
+import Navbar from "./components/Navbar";
+import routes from "./routes/routes";
+import salesRoutes from "./routes/salesRoute";
+import Loading from "./views/Loading";
 
+function App() {
   return (
     <>
-      <OverAllSummary salesData={salesData} />
-      <OrderDetails orderData={salesData.filteredReceipts} />
+      <Navbar />
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          {routes.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={<route.component />}
+            >
+              {route.path === "sales-details" &&
+                salesRoutes.map((sales) => (
+                  <Route
+                    key={sales.path}
+                    path={sales.path}
+                    element={<sales.component />}
+                  />
+                ))}
+            </Route>
+          ))}
+        </Routes>
+      </Suspense>
     </>
   );
 }
