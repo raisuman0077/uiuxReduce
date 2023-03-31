@@ -46,7 +46,7 @@ const PrevMonthStyle = {
   sideBarTabBtn: {
     alignItems: "center",
     borderRadius: "10px",
-    fontSize: "1rem",
+    fontSize: "1.1rem",
     fontWeight: 500,
     justifyContent: "space-between",
     margin: "5px 25px",
@@ -55,6 +55,15 @@ const PrevMonthStyle = {
     width: "100%",
     color: "rgb(119, 119, 119)",
     textTransform: "none",
+  },
+  optionPaper: {
+    cursor: "pointer",
+    border: 0,
+    padding: "16px 16px",
+    fontSize: "1rem",
+    bgcolor: "white",
+    boxShadow:
+      "rgba(0, 0, 0, 0) 0px 5px 5px -3px, rgba(0, 0, 0, 0.1) 0px 8px 10px 1px, rgba(0, 0, 0, 0.0) 0px 3px 10px 2px",
   },
 };
 

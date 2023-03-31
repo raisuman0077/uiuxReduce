@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import data from "../../../data";
 import demoData from "../../../getDemoData";
 import style from "../../style/PrevMonthStyle";
+import moment from "moment/moment";
 import {
   Stack,
   Paper,
@@ -12,8 +13,9 @@ import {
   Tooltip,
   Popper,
   Fade,
+  ClickAwayListener,
 } from "@mui/material";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import PrintIcon from "@mui/icons-material/Print";
@@ -23,12 +25,17 @@ const PrevMonth = () => {
   const salesData = demoData(data);
   const orderData = salesData.filteredReceipts;
 
-  const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpen((previousOpen) => !previousOpen);
+  };
+
+  const handleClickAway = () => {
+    setAnchorEl(null);
+    setOpen(!open);
   };
 
   const NepaliDateConverter = ({ englishDate }) => {
@@ -81,6 +88,8 @@ const PrevMonth = () => {
     );
   };
 
+  console.log(moment().format("YYYY/MM/DD"));
+
   return (
     <>
       <Box sx={{ p: 2 }} display="flex" flexDirection="column">
@@ -116,32 +125,31 @@ const PrevMonth = () => {
               }}
               elevation={4}
             >
-              <Button sx={style.moreOption} onClick={(e) => handleClick(e)}>
-                <MoreHorizIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
-              </Button>
-              <Box sx={{ marginTop: 4 }}>
-                <Popper
-                  open={open}
-                  anchorEl={anchorEl}
-                  placement={"bottom-start"}
-                  transition
-                >
-                  {({ TransitionProps }) => (
-                    <Fade {...TransitionProps} timeout={350}>
-                      <Paper
-                        sx={{
-                          border: 0,
-                          p: 1,
-                          fontSize: "1rem",
-                          bgcolor: "white",
-                        }}
-                      >
-                        Change Payment Method
-                      </Paper>
-                    </Fade>
-                  )}
-                </Popper>
-              </Box>
+              <ClickAwayListener onClickAway={handleClickAway}>
+                <Box sx={{ marginTop: 4 }}>
+                  <Button sx={style.moreOption} onClick={(e) => handleClick(e)}>
+                    <MoreHorizIcon sx={{ color: "rgba(0, 0, 0, 0.54)" }} />
+                  </Button>
+                  <Popper
+                    open={open}
+                    anchorEl={anchorEl}
+                    placement={"bottom-start"}
+                    transition
+                  >
+                    {({ TransitionProps }) => (
+                      <Fade {...TransitionProps} timeout={350}>
+                        <Paper
+                          sx={{
+                            ...style.optionPaper,
+                          }}
+                        >
+                          Change Payment Method
+                        </Paper>
+                      </Fade>
+                    )}
+                  </Popper>
+                </Box>
+              </ClickAwayListener>
               <Box>
                 <Typography sx={style.primFontSize}>
                   <NepaliDateConverter englishDate={o.createdAt} />{" "}
