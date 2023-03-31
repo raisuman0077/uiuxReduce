@@ -1,15 +1,13 @@
 const PrevMonthStyle = {
   stack: {
     marginTop: 2,
-    height: 450,
   },
   paper: {
     position: "relative",
     width: 210,
-    maxHeight: "100%",
-    minHeight: "fit-content",
     padding: 1,
     paddingLeft: 3,
+
     background:
       "radial-gradient(200px 210px ellipse at 75% 50%, rgb(65 221 69), rgb(50 223 54 / 50%), #ffffff)",
     overflowY: "auto",
@@ -18,6 +16,8 @@ const PrevMonthStyle = {
     },
     msOverflowStyle: "none",
     scrollbarWidth: "none",
+    height: "100%",
+    maxHeight: 450,
   },
   moreOption: {
     position: "absolute",
@@ -57,4 +57,5 @@ const PrevMonthStyle = {
     textTransform: "none",
   },
 };
+
 export default PrevMonthStyle;

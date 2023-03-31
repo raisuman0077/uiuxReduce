@@ -113,9 +113,6 @@ const PrevMonth = () => {
               key={o._id}
               sx={{
                 ...style.paper,
-                position: "relative",
-                maxHeight: "600px",
-                overflowY: "auto",
               }}
               elevation={4}
             >

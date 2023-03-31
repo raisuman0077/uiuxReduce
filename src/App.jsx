@@ -7,11 +7,18 @@ import salesRoutes from "./routes/salesRoute";
 import Loading from "./views/Loading";
 
 function App() {
+  const defaultRoute = routes[0]; // set the default route to the first route in the routes array
+
   return (
     <>
       <Navbar />
       <Suspense fallback={<Loading />}>
         <Routes>
+          <Route
+            key={defaultRoute.path}
+            path={defaultRoute.path}
+            element={<defaultRoute.component />}
+          />
           {routes.map((route) => (
             <Route
               key={route.path}

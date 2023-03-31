@@ -3,17 +3,17 @@ import { Link } from "react-router-dom";
 import style from "../style/NavbarStyle";
 import { Box, Button, Typography } from "@mui/material";
 const headerTitles = [
-  { title: "Add Orders", route: "/" },
-  { title: "Session", route: "/session" },
-  { title: "Sales", route: "/sales-details" },
-  { title: "KDS", route: "/kds" },
-  { title: "Summary", route: "/summary" },
-  { title: "Products", route: "/products" },
-  { title: "Inventory", route: "/inventory" },
-  { title: "Parties", route: "/parties" },
-  { title: "Accounts", route: "/accounts" },
-  { title: "Charts", route: "/charts" },
-  { title: "More", route: "/more" },
+  { title: "Add Orders", route: "add-orders" },
+  { title: "Session", route: "session" },
+  { title: "Sales", route: "sales-details" },
+  { title: "KDS", route: "kds" },
+  { title: "Summary", route: "summary" },
+  { title: "Products", route: "products" },
+  { title: "Inventory", route: "inventory" },
+  { title: "Parties", route: "parties" },
+  { title: "Accounts", route: "accounts" },
+  { title: "Charts", route: "charts" },
+  { title: "More", route: "more" },
 ];
 
 const Navbar = () => {
