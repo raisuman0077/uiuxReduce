@@ -11,7 +11,7 @@ const initObj = {
   accomodation: 0,
 };
 
-const demo = (_data = []) => {
+const getData = (_data = []) => {
   const data = Object.values(_data);
 
   const sortedData = data?.sort(
@@ -157,4 +157,4 @@ const getTotalCreditAmount = (order) => {
   return 0;
 };
 
-export default demo;
+export default getData;
