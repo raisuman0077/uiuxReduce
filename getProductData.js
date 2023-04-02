@@ -16,10 +16,24 @@ const getProductData = (_data = []) => {
         barItems: [...(obj.barItems || []), product],
         barItemsAmount: (obj.barItemsAmount || 0) + product.price,
       };
+    } else if (product.department === "cafe" && !product.inventoryLinked) {
+      return {
+        ...obj,
+        cafeItems: [...(obj.cafeItems || []), product],
+        cafeItemsAmount: (obj.cafeItemsAmount || 0) + product.price,
+      };
+    } else if (product.department === "-None-" && !product.hiddenFromExpWeb) {
+      return {
+        ...obj,
+        noneDepItems: [...(obj.noneDepItems || []), product],
+        noneAmount: (obj.noneAmount || 0) + product.price,
+      };
     }
     return obj;
   }, {});
   console.log(productType.barItemsAmount, "jija");
+  console.log(productType.cafeItemsAmount, "cafe amount");
+  console.log(productType.noneDepItems, "cafe amount");
   return productType;
 };
 
