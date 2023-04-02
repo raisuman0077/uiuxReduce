@@ -1,6 +1,6 @@
 const salesDetailsStyle = {
   box: {
-    width: "max-content",
+    width: "100%",
   },
   sideBar: {
     display: "flex",
@@ -10,7 +10,7 @@ const salesDetailsStyle = {
     padding: "12px",
     WebkitBoxAlign: "center",
     boxShadow: "rgba(0, 0, 0, 0.2) 3px 0px 3px 0px",
-    width: "200px", // set a fixed width for the sidebar
+    width: "245px",
   },
 
   sideBarTabBtn: {

@@ -1,40 +1,46 @@
 import React, { Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import routes from "./routes/routes";
-import salesRoutes from "./routes/salesRoute";
 import Loading from "./views/Loading";
 
 function App() {
-  const defaultRoute = routes[0]; // set the default route to the first route in the routes array
-
   return (
     <>
-      <Navbar />
+      <Navbar routeActive />
       <Suspense fallback={<Loading />}>
         <Routes>
-          <Route
-            key={defaultRoute.path}
-            path={defaultRoute.path}
-            element={<defaultRoute.component />}
-          />
-          {routes.map((route) => (
-            <Route
-              key={route.path}
-              path={route.path}
-              element={<route.component />}
-            >
-              {route.path === "sales-details" &&
-                salesRoutes.map((sales) => (
+          <Route path="/" element={<Navigate to="/add-orders" replace />} />
+          {routes.map((route) => {
+            return (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<route.component />}
+              >
+                <Route
+                  path={route.path}
+                  element={<Navigate to="today" replace />}
+                />
+                {(route?.subRoutes || []).map((subRoute) => (
                   <Route
-                    key={sales.path}
-                    path={sales.path}
-                    element={<sales.component />}
-                  />
+                    key={subRoute.path}
+                    path={subRoute.path}
+                    element={<subRoute.component />}
+                  >
+                    {(subRoute?.salesSubRoute || []).map((subSale) => (
+                      <Route
+                        key={subSale.path}
+                        path={subSale.path}
+                        element={<subSale.component />}
+                      ></Route>
+                    ))}
+                  </Route>
                 ))}
-            </Route>
-          ))}
+              </Route>
+            );
+          })}
         </Routes>
       </Suspense>
     </>

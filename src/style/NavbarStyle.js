@@ -4,6 +4,7 @@ const style = {
     flexDirection: "row",
     alignItems: "center",
     position: "sticky",
+    width: "100%",
     top: 0,
     zIndex: 100,
     paddingLeft: "20px",
@@ -38,10 +39,13 @@ const style = {
     "&:hover": {
       backgroundColor: "#ffffff",
     },
-    "&.Mui-disabled": {
+  },
+  activeBtn: {
+    backgroundColor: "#2c4c9c",
+    color: "#ffffff",
+    borderRadius: "10px",
+    "&:hover": {
       backgroundColor: "#2c4c9c",
-      color: "#ffffff",
-      borderRadius: "10px",
     },
   },
 };

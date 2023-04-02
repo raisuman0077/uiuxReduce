@@ -44,9 +44,7 @@ const SalesDetails = () => {
             </Link>
           ))}
         </Box>
-        <Box>
-          <Outlet />
-        </Box>
+        <Outlet />
       </Box>
     </>
   );
