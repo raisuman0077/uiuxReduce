@@ -25,7 +25,7 @@ const getProductData = (_data = []) => {
     } else {
       return {
         ...obj,
-        mulitDepCode: [...(obj.mulitDepCode || []), product.productCode],
+        multiDepItems: [...(obj.multiDepItems || []), product],
       };
     }
   }, {});

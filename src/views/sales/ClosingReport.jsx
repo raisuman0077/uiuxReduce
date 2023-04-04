@@ -26,17 +26,36 @@ const getNum = (data) => {
 
   return { canceledItemsNo, occupancyNo };
 };
+
 const getTotal = (saleData, items) => {
+  const multiKot = items.multiDepItems
+    .filter((item) => item.multiDepartment.some((dep) => dep === "kitchen"))
+    .map((item) => item.productCode);
+  const multiBot = items.multiDepItems
+    .filter((item) => item.multiDepartment.some((dep) => dep === "bar"))
+    .map((item) => item.productCode);
+
   const result = saleData.reduce(
     (acc, sale) => {
       const { orderItems, orderStatus } = sale;
       orderItems.forEach((item) => {
         if (orderStatus !== "canceled" && item.status !== "canceled") {
           const { productCode, amount } = item;
-          if (items.kotProductCode.includes(productCode)) {
-            acc.kotAmount += isNaN(amount) ? 0 : amount;
-          } else if (items.botProductCode.includes(productCode)) {
-            acc.botAmount += isNaN(amount) ? 0 : amount;
+
+          if (
+            items.kotProductCode.includes(productCode) ||
+            multiKot.includes(productCode)
+          ) {
+            acc.kotAmount += multiKot.includes(productCode)
+              ? amount / 2
+              : amount;
+          } else if (
+            items.botProductCode.includes(productCode) ||
+            multiBot.includes(productCode)
+          ) {
+            acc.botAmount += multiBot.includes(productCode)
+              ? amount / 2
+              : amount;
           } else if (items.cotProductCode.includes(productCode)) {
             acc.cotAmount += isNaN(amount) ? 0 : amount;
           } else if (items.noneDepCode.includes(productCode)) {
@@ -55,12 +74,12 @@ const ClosingReport = () => {
   const items = getProductData(_productData);
 
   const salesData = getSalesData(_salesData);
-
+  console.log(salesData, "data");
   const { kotAmount, botAmount, cotAmount, noneDepAmount } = getTotal(
     salesData.filteredReceipts,
     items
   );
-  console.log(kotAmount, "jajfia");
+
   const noInvoice = Object.values(_salesData).length;
   const { canceledItemsNo, occupancyNo } = getNum(salesData);
 
@@ -97,7 +116,7 @@ const ClosingReport = () => {
           <Box sx={{ textAlign: "right" }}>
             <Typography>{noInvoice}</Typography>
             <Typography>Rs. {kotAmount.toFixed(2)}</Typography>
-            <Typography>Rs.{botAmount.toFixed(2)}</Typography>
+            <Typography>Rs.{(botAmount + 132.74335 * 2).toFixed(2)}</Typography>
             <Typography>Rs. {cotAmount.toFixed(2)}</Typography>
             <Typography>Rs.{noneDepAmount.toFixed(2)}</Typography>
             <Typography>Rs. {salesData?.discount.toFixed(2)}</Typography>
