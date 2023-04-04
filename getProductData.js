@@ -1,39 +1,35 @@
 const getProductData = (_data = []) => {
   const productData = Object.values(_data);
 
-  const productType = productData?.reduce((obj, product) => {
+  const productType = productData.reduce((obj, product) => {
     if (product.department === "kitchen") {
       return {
         ...obj,
-        kitchenItems: [...(obj.kitchenItems || []), product],
-        kitchenProductAmount:
-          (obj.kitchenProductAmount || 0) +
-          (isNaN(product.price) ? 0 : product.price),
+        kotProductCode: [...(obj.kotProductCode || []), product.productCode],
       };
-    } else if (product.department === "bar" && product.inventoryLinked) {
+    } else if (product.department === "bar") {
       return {
         ...obj,
-        barItems: [...(obj.barItems || []), product],
-        barItemsAmount: (obj.barItemsAmount || 0) + product.price,
+        botProductCode: [...(obj.botProductCode || []), product.productCode],
       };
-    } else if (product.department === "cafe" && !product.inventoryLinked) {
+    } else if (product.department === "cafe") {
       return {
         ...obj,
-        cafeItems: [...(obj.cafeItems || []), product],
-        cafeItemsAmount: (obj.cafeItemsAmount || 0) + product.price,
+        cotProductCode: [...(obj.cotProductCode || []), product.productCode],
       };
-    } else if (product.department === "-None-" && !product.hiddenFromExpWeb) {
+    } else if (product.department === "-None-") {
       return {
         ...obj,
-        noneDepItems: [...(obj.noneDepItems || []), product],
-        noneAmount: (obj.noneAmount || 0) + product.price,
+        noneDepCode: [...(obj.noneDepCode || []), product.productCode],
+      };
+    } else {
+      return {
+        ...obj,
+        mulitDepCode: [...(obj.mulitDepCode || []), product.productCode],
       };
     }
-    return obj;
   }, {});
-  console.log(productType.barItemsAmount, "jija");
-  console.log(productType.cafeItemsAmount, "cafe amount");
-  console.log(productType.noneDepItems, "cafe amount");
+
   return productType;
 };
 

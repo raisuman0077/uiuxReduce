@@ -6,10 +6,63 @@ import getSalesData from "../../../getData";
 import _salesData from "../../../data";
 import { Stack, Typography, Box } from "@mui/material";
 
+const getNum = (data) => {
+  const canceledItemsNo = data.filteredReceipts.reduce((total, receipt) => {
+    if (receipt.orderStatus === "canceled") {
+      return total + receipt.orderItems.length;
+    }
+    const canceledItems = receipt.orderItems.filter(
+      (item) => item.status === "canceled"
+    );
+    return total + canceledItems.length;
+  }, 0);
+
+  const occupancyNo = data.filteredReceipts.reduce((total, receipt) => {
+    if (receipt.orderStatus !== "canceled") {
+      return total + receipt.peopleCount;
+    }
+    return total;
+  }, 0);
+
+  return { canceledItemsNo, occupancyNo };
+};
+const getTotal = (saleData, items) => {
+  const result = saleData.reduce(
+    (acc, sale) => {
+      const { orderItems, orderStatus } = sale;
+      orderItems.forEach((item) => {
+        if (orderStatus !== "canceled" && item.status !== "canceled") {
+          const { productCode, amount } = item;
+          if (items.kotProductCode.includes(productCode)) {
+            acc.kotAmount += isNaN(amount) ? 0 : amount;
+          } else if (items.botProductCode.includes(productCode)) {
+            acc.botAmount += isNaN(amount) ? 0 : amount;
+          } else if (items.cotProductCode.includes(productCode)) {
+            acc.cotAmount += isNaN(amount) ? 0 : amount;
+          } else if (items.noneDepCode.includes(productCode)) {
+            acc.noneDepAmount += isNaN(amount) ? 0 : amount;
+          }
+        }
+      });
+      return acc;
+    },
+    { kotAmount: 0, botAmount: 0, cotAmount: 0, noneDepAmount: 0 }
+  );
+  return result;
+};
+
 const ClosingReport = () => {
-  const productData = getProductData(_productData);
+  const items = getProductData(_productData);
+
   const salesData = getSalesData(_salesData);
+
+  const { kotAmount, botAmount, cotAmount, noneDepAmount } = getTotal(
+    salesData.filteredReceipts,
+    items
+  );
+  console.log(kotAmount, "jajfia");
   const noInvoice = Object.values(_salesData).length;
+  const { canceledItemsNo, occupancyNo } = getNum(salesData);
 
   return (
     <Box sx={style.box}>
@@ -32,7 +85,7 @@ const ClosingReport = () => {
             <Typography>BOT*</Typography>
             <Typography>COT*</Typography>
             <Typography>None</Typography>
-            <Typography>Discout</Typography>
+            <Typography>Discount</Typography>
             <Typography>Service Charge</Typography>
             <Typography>VAT</Typography>
             <Typography>Occupancy</Typography>
@@ -43,17 +96,17 @@ const ClosingReport = () => {
           </Box>
           <Box sx={{ textAlign: "right" }}>
             <Typography>{noInvoice}</Typography>
-            <Typography>84ff</Typography>
-            <Typography>9284</Typography>
-            <Typography>9284</Typography>
-            <Typography>9284</Typography>
+            <Typography>Rs. {kotAmount.toFixed(2)}</Typography>
+            <Typography>Rs.{botAmount.toFixed(2)}</Typography>
+            <Typography>Rs. {cotAmount.toFixed(2)}</Typography>
+            <Typography>Rs.{noneDepAmount.toFixed(2)}</Typography>
             <Typography>Rs. {salesData?.discount.toFixed(2)}</Typography>
             <Typography>
               Rs. {salesData?.charges?.serviceCharge.toFixed(2)}
             </Typography>
-            <Typography>9284</Typography>
-            <Typography>jiijf</Typography>
-            <Typography>9284</Typography>
+            <Typography>Rs. {salesData.charges?.vat.toFixed(2)}</Typography>
+            <Typography>{occupancyNo}</Typography>
+            <Typography>{canceledItemsNo}</Typography>
           </Box>
         </Box>
         <Typography sx={style.title}>Group wise sales</Typography>
